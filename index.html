@@ -123,93 +123,94 @@
     drawStars();
 
     // Fireworks
-    const fireworks = [];
-    const particles = [];
+const fireworks = [];
+const particles = [];
 
-    class Firework {
-      constructor(x, y, color) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        this.exploded = false;
-      }
-      update() {
-        if (!this.exploded) {
-          this.y -= 4;
-          if (Math.random() < 0.02) {
-            this.exploded = true;
-            for (let i = 0; i < 100; i++) {
-              particles.push(new Particle(this.x, this.y, this.color));
-            }
-          }
-        }
-      }
-      draw() {
-        if (!this.exploded) {
-          fireworksCtx.beginPath();
-          fireworksCtx.arc(this.x, this.y, 5, 0, Math.PI * 2);
-          fireworksCtx.fillStyle = this.color;
-          fireworksCtx.fill();
+class Firework {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+    this.exploded = false;
+  }
+  update() {
+    if (!this.exploded) {
+      this.y -= 4;
+      if (Math.random() < 0.02) { // Reduce the chance of explosion
+        this.exploded = true;
+        for (let i = 0; i < 50; i++) { // Reduce the number of particles
+          particles.push(new Particle(this.x, this.y, this.color));
         }
       }
     }
-
-    class Particle {
-      constructor(x, y, color) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        this.radius = Math.random() * 3 + 1;
-        this.vx = (Math.random() - 0.5) * 6;
-        this.vy = (Math.random() - 0.5) * 6;
-        this.alpha = 1;
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.alpha -= 0.02;
-      }
-      draw() {
-        fireworksCtx.save();
-        fireworksCtx.globalAlpha = this.alpha;
-        fireworksCtx.beginPath();
-        fireworksCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        fireworksCtx.fillStyle = this.color;
-        fireworksCtx.fill();
-        fireworksCtx.restore();
-      }
+  }
+  draw() {
+    if (!this.exploded) {
+      fireworksCtx.beginPath();
+      fireworksCtx.arc(this.x, this.y, 5, 0, Math.PI * 2);
+      fireworksCtx.fillStyle = this.color;
+      fireworksCtx.fill();
     }
+  }
+}
 
-    function animateFireworks() {
-      fireworksCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      fireworksCtx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+class Particle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+    this.radius = Math.random() * 3 + 1;
+    this.vx = (Math.random() - 0.5) * 6;
+    this.vy = (Math.random() - 0.5) * 6;
+    this.alpha = 1;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.alpha -= 0.02;
+  }
+  draw() {
+    fireworksCtx.save();
+    fireworksCtx.globalAlpha = this.alpha;
+    fireworksCtx.beginPath();
+    fireworksCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    fireworksCtx.fillStyle = this.color;
+    fireworksCtx.fill();
+    fireworksCtx.restore();
+  }
+}
 
-      fireworks.forEach((fw, i) => {
-        fw.update();
-        fw.draw();
-        if (fw.exploded) fireworks.splice(i, 1);
-      });
+function animateFireworks() {
+  fireworksCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+  fireworksCtx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
 
-      particles.forEach((p, i) => {
-        p.update();
-        p.draw();
-        if (p.alpha <= 0) particles.splice(i, 1);
-      });
+  fireworks.forEach((fw, i) => {
+    fw.update();
+    fw.draw();
+    if (fw.exploded) fireworks.splice(i, 1);
+  });
 
-      if (Math.random() < 0.1) {
-        fireworks.push(
-          new Firework(
-            Math.random() * fireworksCanvas.width,
-            fireworksCanvas.height,
-            `hsl(${Math.random() * 360}, 100%, 50%)`
-          )
-        );
-      }
+  particles.forEach((p, i) => {
+    p.update();
+    p.draw();
+    if (p.alpha <= 0) particles.splice(i, 1);
+  });
 
-      requestAnimationFrame(animateFireworks);
-    }
+  if (Math.random() < 0.05) { // Reduce the frequency of new fireworks
+    fireworks.push(
+      new Firework(
+        Math.random() * fireworksCanvas.width,
+        fireworksCanvas.height,
+        `hsl(${Math.random() * 360}, 100%, 50%)`
+      )
+    );
+  }
 
-    animateFireworks();
+  requestAnimationFrame(animateFireworks);
+}
+
+animateFireworks();
+
 
     // Countdown Timer
     function updateCountdown() {
